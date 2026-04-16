@@ -57,11 +57,12 @@ export class FileArchive {
     el.dataset.runId = item.runId;
 
     const date = new Date(item.createdAt).toLocaleDateString();
+    const safeVerdict = ['Pass', 'Revise', 'Reject'].includes(item.verdict) ? item.verdict : 'Revise';
     el.innerHTML = `
       <div class="archive-item-name">${escapeHtml(item.filename)}</div>
       <div class="archive-item-meta">
-        <span class="archive-item-date">${date}</span>
-        <span class="verdict-badge ${item.verdict}">${item.verdict}</span>
+        <span class="archive-item-date">${escapeHtml(date)}</span>
+        <span class="verdict-badge ${safeVerdict}">${escapeHtml(safeVerdict)}</span>
       </div>
     `;
     el.addEventListener('click', () => this.openDetail(item.runId, el));
@@ -102,10 +103,12 @@ export class FileArchive {
     const verdict = detail.resultJson?.verdict ?? {};
 
     this.detailEl.querySelector('#archive-detail-title')!.textContent = detail.filename;
+    const safeVerdict = ['Pass', 'Revise', 'Reject'].includes(verdict.verdict) ? verdict.verdict : 'Revise';
+    const safeConf = Number.isFinite(Number(verdict.confidence)) ? Math.max(0, Math.min(100, Number(verdict.confidence))) : null;
     this.detailEl.querySelector('#archive-detail-body')!.innerHTML = `
       <div class="detail-section">
-        <div class="verdict-${verdict.verdict}" style="font-size:12px;margin-bottom:4px">${verdict.verdict ?? '-'}</div>
-        <div style="font-size:5px;color:#888">Judge certainty: ${verdict.confidence ?? '-'}%  ·  ${images.length} image${images.length !== 1 ? 's' : ''}</div>
+        <div class="verdict-${safeVerdict}" style="font-size:12px;margin-bottom:4px">${escapeHtml(verdict.verdict ?? '-')}</div>
+        <div style="font-size:5px;color:#888">Judge certainty: ${safeConf ?? '-'}%  ·  ${images.length} image${images.length !== 1 ? 's' : ''}</div>
       </div>
     `;
 

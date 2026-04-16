@@ -24,6 +24,15 @@ function hasValidAccessToken(runId: string, accessToken?: string): boolean {
   return expected.length === actual.length && timingSafeEqual(expected, actual);
 }
 
+/**
+ * Reject runIds that could traverse out of the tmp dir when concatenated
+ * into a filename. We accept only conservative characters — UUIDs and
+ * short hex/ids. Anything else is rejected before it reaches the fs.
+ */
+function isSafeRunId(runId: unknown): runId is string {
+  return typeof runId === 'string' && runId.length > 0 && runId.length <= 128 && /^[A-Za-z0-9_-]+$/.test(runId);
+}
+
 export function setupSocketHandlers(io: SocketServer): void {
   io.on('connection', (socket: Socket) => {
     console.log(`[socket] connected: ${socket.id}`);
@@ -42,6 +51,18 @@ export function setupSocketHandlers(io: SocketServer): void {
       agents?: string;
       depth?: number;
     }) => {
+      // Reject malformed runIds — they flow into tmp file paths and
+      // checkpoint paths (see src/pipeline/checkpoint.ts). A runId like
+      // "a/../../etc/foo" would otherwise let the client steer where we
+      // write a JSON checkpoint file.
+      if (!isSafeRunId(runId)) {
+        socket.emit('pipeline:event', { type: 'pipeline:error', message: 'Invalid runId' });
+        return;
+      }
+      if (typeof docText !== 'string' || typeof filename !== 'string') {
+        socket.emit('pipeline:event', { type: 'pipeline:error', message: 'Invalid request' });
+        return;
+      }
       const controller = new AbortController();
       activeRuns.set(runId, controller);
       const accessToken = randomBytes(32).toString('hex');
@@ -172,11 +193,17 @@ export function setupSocketHandlers(io: SocketServer): void {
       runId,
       editedDocText,
       filename,
+      accessToken,
     }: {
       runId: string;
       editedDocText: string;
       filename: string;
+      accessToken?: string;
     }) => {
+      if (!isSafeRunId(runId) || !hasValidAccessToken(runId, accessToken)) {
+        socket.emit('archive:error', { error: 'Forbidden' });
+        return;
+      }
       const session = sessionResults.get(runId);
       if (!session) {
         socket.emit('archive:error', { error: 'No completed review found for this run' });
@@ -200,7 +227,8 @@ export function setupSocketHandlers(io: SocketServer): void {
     });
 
     // ── Cancel pipeline ─────────────────────────────────────────────────
-    socket.on('pipeline:cancel', ({ runId }: { runId: string }) => {
+    socket.on('pipeline:cancel', ({ runId, accessToken }: { runId: string; accessToken?: string }) => {
+      if (!isSafeRunId(runId) || !hasValidAccessToken(runId, accessToken)) return;
       const ctrl = activeRuns.get(runId);
       if (ctrl) {
         ctrl.abort();

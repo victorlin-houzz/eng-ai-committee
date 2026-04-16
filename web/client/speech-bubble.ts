@@ -35,7 +35,8 @@ export class BubbleManager {
 
     let content = '';
     if (severity) {
-      content += `<span class="bubble-sev sev-${severity}">${severity}</span><br>`;
+      const safeSev = ['Low', 'Medium', 'High', 'Critical'].includes(severity) ? severity : 'Low';
+      content += `<span class="bubble-sev sev-${safeSev}">${escapeHtml(safeSev)}</span><br>`;
     }
     content += escapeHtml(text).slice(0, 120) + (text.length > 120 ? '…' : '');
     this.speechEl.innerHTML = content;

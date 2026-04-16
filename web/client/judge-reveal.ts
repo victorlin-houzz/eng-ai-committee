@@ -45,11 +45,13 @@ export class JudgeReveal {
 
     const blockingSummary = buildBlockingSummary(verdict.topBlockingIssues);
 
+    const safeVerdict = ['Pass', 'Revise', 'Reject'].includes(verdict.verdict) ? verdict.verdict : 'Revise';
+    const safeConf = Number.isFinite(Number(verdict.confidence)) ? Math.max(0, Math.min(100, Number(verdict.confidence))) : 0;
     this.bannerEl.innerHTML = `
-      <span class="verdict-word verdict-${verdict.verdict}" style="color:${verdictColor}">
-        ${verdict.verdict.toUpperCase()}
+      <span class="verdict-word verdict-${safeVerdict}" style="color:${verdictColor}">
+        ${safeVerdict.toUpperCase()}
       </span>
-      <div class="verdict-confidence">Judge certainty: ${verdict.confidence}%</div>
+      <div class="verdict-confidence">Judge certainty: ${safeConf}%</div>
       ${blockingSummary
         ? `<div style="margin-top:6px;font-size:5px;color:#9090a0">${blockingSummary}</div>`
         : ''}

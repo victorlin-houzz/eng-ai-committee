@@ -119,22 +119,28 @@ export class LogTab {
       return `<strong>Judge:</strong> ${escapeHtml(text)}${(payload?.message ?? '').length > 300 ? '…' : ''}`;
     }
     const type: string = payload?.type ?? 'unknown';
+    const agent = escapeHtml(payload.agent ?? '');
+    const stage = escapeHtml(payload.stage ?? '');
+    const sev = escapeHtml(payload.finding?.severity ?? '');
+    const verdict = escapeHtml(payload.verdict?.verdict ?? '?');
+    const pipelineVerdict = escapeHtml(payload.result?.verdict?.verdict ?? '?');
+    const conf = Number.isFinite(Number(payload.verdict?.confidence)) ? Number(payload.verdict.confidence) : '-';
     switch (type) {
-      case 'stage:start':          return `▶ Stage started: <strong>${payload.stage}</strong>`;
-      case 'agent:thinking':       return `💭 <strong>${payload.agent}</strong>: ${escapeHtml(payload.message ?? '')}`;
-      case 'agent:finding':        return `🔍 <strong>${payload.agent}</strong> [${payload.finding?.severity}]: ${escapeHtml(payload.finding?.title ?? '')}`;
-      case 'agent:done':           return `✅ <strong>${payload.agent}</strong> done — ${payload.findingCount} finding(s)`;
-      case 'agent:retry':          return `↺ <strong>${payload.agent}</strong> retry #${payload.attempt}: ${escapeHtml(payload.reason ?? '')}`;
-      case 'agent:timeout':        return `⏱ <strong>${payload.agent}</strong> timed out`;
-      case 'dedup:complete':       return `🔗 Dedup: ${payload.before} → ${payload.after} findings`;
-      case 'debate:round:start':   return `⚔ Debate round ${payload.round} started`;
+      case 'stage:start':          return `▶ Stage started: <strong>${stage}</strong>`;
+      case 'agent:thinking':       return `💭 <strong>${agent}</strong>: ${escapeHtml(payload.message ?? '')}`;
+      case 'agent:finding':        return `🔍 <strong>${agent}</strong> [${sev}]: ${escapeHtml(payload.finding?.title ?? '')}`;
+      case 'agent:done':           return `✅ <strong>${agent}</strong> done — ${Number(payload.findingCount) || 0} finding(s)`;
+      case 'agent:retry':          return `↺ <strong>${agent}</strong> retry #${Number(payload.attempt) || 0}: ${escapeHtml(payload.reason ?? '')}`;
+      case 'agent:timeout':        return `⏱ <strong>${agent}</strong> timed out`;
+      case 'dedup:complete':       return `🔗 Dedup: ${Number(payload.before) || 0} → ${Number(payload.after) || 0} findings`;
+      case 'debate:round:start':   return `⚔ Debate round ${Number(payload.round) || 0} started`;
       case 'skeptic:challenge':    return `❓ Skeptic challenged ${payload.challenges?.length ?? 0} finding(s)`;
       case 'specialist:rebuttal':  return `💬 ${payload.rebuttals?.length ?? 0} rebuttal(s) submitted`;
-      case 'skeptic:rating':       return `👍 Skeptic rated — ${payload.survivingCount} surviving`;
-      case 'debate:round:end':     return `🏁 Round ${payload.round} ended — ${payload.survivingFindings?.length ?? 0} surviving`;
+      case 'skeptic:rating':       return `👍 Skeptic rated — ${Number(payload.survivingCount) || 0} surviving`;
+      case 'debate:round:end':     return `🏁 Round ${Number(payload.round) || 0} ended — ${payload.survivingFindings?.length ?? 0} surviving`;
       case 'judge:thinking':       return `⚖ Judge deliberating…`;
-      case 'judge:verdict':        return `⚖ <strong>Verdict: ${payload.verdict?.verdict ?? '?'}</strong> (judge certainty: ${payload.verdict?.confidence ?? '-'}%)`;
-      case 'pipeline:complete':    return `🎉 Pipeline complete — ${payload.result?.verdict?.verdict ?? '?'}`;
+      case 'judge:verdict':        return `⚖ <strong>Verdict: ${verdict}</strong> (judge certainty: ${conf}%)`;
+      case 'pipeline:complete':    return `🎉 Pipeline complete — ${pipelineVerdict}`;
       case 'pipeline:error':       return `❌ Error: ${escapeHtml(payload.message ?? '')}`;
       default:                     return escapeHtml(JSON.stringify(payload).slice(0, 120));
     }

@@ -77,6 +77,28 @@ const debateRecords = new Map<string, DebateRecord>();
 let latestVerdict: any = null;
 
 
+// ── HTML escape for untrusted LLM/user content ────────────────────────
+// Any string sourced from LLM responses or user uploads MUST be escaped
+// before being inserted via innerHTML — prompt-injected docs can try to
+// emit <script>/onerror handlers in finding fields.
+function esc(s: unknown): string {
+  if (s === null || s === undefined) return '';
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// Allow known severity values through as-is (used in CSS class names);
+// anything unexpected is coerced to a safe default.
+const VALID_SEV = new Set(['Low', 'Medium', 'High', 'Critical']);
+function safeSev(s: unknown): string {
+  const v = String(s ?? '');
+  return VALID_SEV.has(v) ? v : 'Low';
+}
+
 // ── Findings modal helpers ─────────────────────────────────────────────
 const SEV_COLOR: Record<string, string> = {
   Low: 'var(--color-low)', Medium: 'var(--color-medium)',
@@ -92,17 +114,18 @@ function openFindingsModal(agentLabel: string, findings: Finding[]): void {
   bodyEl.innerHTML = '';
 
   for (const f of findings) {
-    const color = SEV_COLOR[f.severity] ?? 'var(--color-text)';
+    const sev = safeSev(f.severity);
+    const color = SEV_COLOR[sev] ?? 'var(--color-text)';
     const card = document.createElement('div');
     card.className = 'finding-card';
     card.innerHTML = `
       <div class="finding-card-header">
-        <span class="finding-sev-badge sev-${f.severity}" style="color:${color};border-color:${color}">${f.severity.toUpperCase()}</span>
-        <span class="finding-title">${f.title}</span>
+        <span class="finding-sev-badge sev-${sev}" style="color:${color};border-color:${color}">${esc(sev.toUpperCase())}</span>
+        <span class="finding-title">${esc(f.title)}</span>
       </div>
-      <div class="finding-detail">${f.description}</div>
-      ${f.excerpt ? `<div class="finding-excerpt">"${f.excerpt}"</div>` : ''}
-      <div class="finding-rec">${f.recommendation}</div>
+      <div class="finding-detail">${esc(f.description)}</div>
+      ${f.excerpt ? `<div class="finding-excerpt">"${esc(f.excerpt)}"</div>` : ''}
+      <div class="finding-rec">${esc(f.recommendation)}</div>
     `;
     bodyEl.appendChild(card);
   }
@@ -185,24 +208,26 @@ function openSkepticModal(): void {
     for (const rec of debateRecords.values()) {
       const finding = findingsById.get(rec.findingId);
       const title = finding?.title ?? rec.findingId;
-      const ratingCls = rec.rating ? `verdict-${rec.rating}` : '';
+      const safeRating = rec.rating === 'convincing' || rec.rating === 'unconvincing' ? rec.rating : '';
+      const ratingCls = safeRating ? `verdict-${safeRating}` : '';
+      const agentLabel = (rec.rebuttalAgent ?? 'SPECIALIST').replace(/_/g, '-').toUpperCase();
       const card = document.createElement('div');
       card.className = 'debate-card';
       card.innerHTML = `
-        <div class="debate-card-title">${title}</div>
+        <div class="debate-card-title">${esc(title)}</div>
         <div class="debate-card-row">
           <div class="debate-card-who skeptic-who">SKEPTIC</div>
-          <div class="debate-card-text">${rec.challenge}</div>
+          <div class="debate-card-text">${esc(rec.challenge)}</div>
         </div>
         ${rec.rebuttal ? `
         <div class="debate-card-row">
-          <div class="debate-card-who specialist-who">${(rec.rebuttalAgent ?? 'SPECIALIST').replace(/_/g, '-').toUpperCase()}</div>
-          <div class="debate-card-text">${rec.rebuttal}</div>
+          <div class="debate-card-who specialist-who">${esc(agentLabel)}</div>
+          <div class="debate-card-text">${esc(rec.rebuttal)}</div>
         </div>` : ''}
-        ${rec.rating ? `
+        ${safeRating ? `
         <div class="debate-card-row">
-          <div class="debate-card-who ${ratingCls}">${rec.rating.toUpperCase()}</div>
-          <div class="debate-card-text dim">${rec.ratingReasoning ?? ''}</div>
+          <div class="debate-card-who ${ratingCls}">${esc(safeRating.toUpperCase())}</div>
+          <div class="debate-card-text dim">${esc(rec.ratingReasoning ?? '')}</div>
         </div>` : ''}
       `;
       bodyEl.appendChild(card);
@@ -226,12 +251,15 @@ function openJudgeModal(): void {
   const v = latestVerdict;
   bodyEl.innerHTML = '';
 
+  const safeVerdict = ['Pass', 'Revise', 'Reject'].includes(v.verdict) ? v.verdict : 'Revise';
+  const safeConfidence = Number.isFinite(Number(v.confidence)) ? Math.max(0, Math.min(100, Number(v.confidence))) : 0;
+
   // Verdict hero
   const hero = document.createElement('div');
-  hero.className = `judge-verdict-hero verdict-${v.verdict}`;
+  hero.className = `judge-verdict-hero verdict-${safeVerdict}`;
   hero.innerHTML = `
-    <span class="judge-verdict-word">${v.verdict.toUpperCase()}</span>
-    <span class="judge-confidence">${v.confidence}% confidence</span>
+    <span class="judge-verdict-word">${esc(safeVerdict.toUpperCase())}</span>
+    <span class="judge-confidence">${safeConfidence}% confidence</span>
   `;
   bodyEl.appendChild(hero);
 
@@ -241,10 +269,11 @@ function openJudgeModal(): void {
     sec.className = 'judge-section';
     sec.innerHTML = `<div class="judge-section-title">TOP BLOCKING ISSUES</div>` +
       v.topBlockingIssues.map((f: any) => {
-        const color = SEV_COLOR[f.severity] ?? 'var(--color-text)';
+        const sev = safeSev(f.severity);
+        const color = SEV_COLOR[sev] ?? 'var(--color-text)';
         return `<div class="judge-blocking-item">
-          <span class="finding-sev-badge sev-${f.severity}" style="color:${color};border-color:${color}">${f.severity?.toUpperCase()}</span>
-          <span>${f.title}</span>
+          <span class="finding-sev-badge sev-${sev}" style="color:${color};border-color:${color}">${esc(sev.toUpperCase())}</span>
+          <span>${esc(f.title)}</span>
         </div>`;
       }).join('');
     bodyEl.appendChild(sec);
@@ -256,7 +285,7 @@ function openJudgeModal(): void {
     const sec = document.createElement('div');
     sec.className = 'judge-section';
     sec.innerHTML = `<div class="judge-section-title">${v.committeeBrief ? 'COMMITTEE BRIEF' : 'REVISION MEMO'}</div>
-      <div class="judge-section-text">${memo}</div>`;
+      <div class="judge-section-text">${esc(memo)}</div>`;
     bodyEl.appendChild(sec);
   }
 
@@ -265,7 +294,7 @@ function openJudgeModal(): void {
     const sec = document.createElement('div');
     sec.className = 'judge-section';
     sec.innerHTML = `<div class="judge-section-title">DEBATE SUMMARY</div>
-      <div class="judge-section-text">${v.agentDebateSummary}</div>`;
+      <div class="judge-section-text">${esc(v.agentDebateSummary)}</div>`;
     bodyEl.appendChild(sec);
   }
 
@@ -307,17 +336,18 @@ function renderReportFindings(bodyEl: HTMLElement): void {
     section.className = 'report-section findings-section';
     section.innerHTML = `<div class="report-section-title">${label} — ${filtered.length} finding${filtered.length !== 1 ? 's' : ''}</div>`;
     for (const f of filtered) {
-      const color = SEV_COLOR[f.severity] ?? 'var(--color-text)';
+      const sev = safeSev(f.severity);
+      const color = SEV_COLOR[sev] ?? 'var(--color-text)';
       const card = document.createElement('div');
       card.className = 'finding-card';
       card.innerHTML = `
         <div class="finding-card-header">
-          <span class="finding-sev-badge sev-${f.severity}" style="color:${color};border-color:${color}">${f.severity.toUpperCase()}</span>
-          <span class="finding-title">${f.title}</span>
+          <span class="finding-sev-badge sev-${sev}" style="color:${color};border-color:${color}">${esc(sev.toUpperCase())}</span>
+          <span class="finding-title">${esc(f.title)}</span>
         </div>
-        <div class="finding-detail">${f.description}</div>
-        ${f.excerpt ? `<div class="finding-excerpt">"${f.excerpt}"</div>` : ''}
-        <div class="finding-rec">${f.recommendation}</div>
+        <div class="finding-detail">${esc(f.description)}</div>
+        ${f.excerpt ? `<div class="finding-excerpt">"${esc(f.excerpt)}"</div>` : ''}
+        <div class="finding-rec">${esc(f.recommendation)}</div>
       `;
       section.appendChild(card);
     }
@@ -382,24 +412,27 @@ function openFullReport(): void {
     section.innerHTML = `<div class="report-section-title">⚔ DEBATE RECORD</div>`;
     for (const rec of debateRecords.values()) {
       const finding = findingsById.get(rec.findingId);
-      const ratingCls = rec.rating ? `verdict-${rec.rating}` : '';
+      const title = finding?.title ?? rec.findingId;
+      const safeRating = rec.rating === 'convincing' || rec.rating === 'unconvincing' ? rec.rating : '';
+      const ratingCls = safeRating ? `verdict-${safeRating}` : '';
+      const agentLabel = (rec.rebuttalAgent ?? 'SPECIALIST').replace(/_/g, '-').toUpperCase();
       const card = document.createElement('div');
       card.className = 'debate-card';
       card.innerHTML = `
-        <div class="debate-card-title">${finding?.title ?? rec.findingId}</div>
+        <div class="debate-card-title">${esc(title)}</div>
         <div class="debate-card-row">
           <div class="debate-card-who skeptic-who">SKEPTIC</div>
-          <div class="debate-card-text">${rec.challenge}</div>
+          <div class="debate-card-text">${esc(rec.challenge)}</div>
         </div>
         ${rec.rebuttal ? `
         <div class="debate-card-row">
-          <div class="debate-card-who specialist-who">${(rec.rebuttalAgent ?? 'SPECIALIST').replace(/_/g, '-').toUpperCase()}</div>
-          <div class="debate-card-text">${rec.rebuttal}</div>
+          <div class="debate-card-who specialist-who">${esc(agentLabel)}</div>
+          <div class="debate-card-text">${esc(rec.rebuttal)}</div>
         </div>` : ''}
-        ${rec.rating ? `
+        ${safeRating ? `
         <div class="debate-card-row">
-          <div class="debate-card-who ${ratingCls}">${rec.rating.toUpperCase()}</div>
-          <div class="debate-card-text dim">${rec.ratingReasoning ?? ''}</div>
+          <div class="debate-card-who ${ratingCls}">${esc(safeRating.toUpperCase())}</div>
+          <div class="debate-card-text dim">${esc(rec.ratingReasoning ?? '')}</div>
         </div>` : ''}
       `;
       section.appendChild(card);
@@ -412,22 +445,23 @@ function openFullReport(): void {
     const v = latestVerdict;
     const section = document.createElement('div');
     section.className = 'report-section';
-    const verdictColor = { Pass: 'var(--color-pass)', Revise: 'var(--color-revise)', Reject: 'var(--color-reject)' }[v.verdict as string] ?? 'var(--color-text)';
+    const safeVerdict = ['Pass', 'Revise', 'Reject'].includes(v.verdict) ? v.verdict : 'Revise';
+    const safeConfidence = Number.isFinite(Number(v.confidence)) ? Math.max(0, Math.min(100, Number(v.confidence))) : 0;
     section.innerHTML = `
       <div class="report-section-title">⚖ JUDGE VERDICT</div>
-      <div class="judge-verdict-hero verdict-${v.verdict}" style="margin-bottom:10px">
-        <span class="judge-verdict-word">${v.verdict.toUpperCase()}</span>
-        <span class="judge-confidence">${v.confidence}% confidence</span>
+      <div class="judge-verdict-hero verdict-${safeVerdict}" style="margin-bottom:10px">
+        <span class="judge-verdict-word">${esc(safeVerdict.toUpperCase())}</span>
+        <span class="judge-confidence">${safeConfidence}% confidence</span>
       </div>
       ${(v.committeeBrief || v.revisionMemo) ? `
       <div class="judge-section" style="margin-bottom:8px">
         <div class="judge-section-title">${v.committeeBrief ? 'COMMITTEE BRIEF' : 'REVISION MEMO'}</div>
-        <div class="judge-section-text">${v.committeeBrief || v.revisionMemo}</div>
+        <div class="judge-section-text">${esc(v.committeeBrief || v.revisionMemo)}</div>
       </div>` : ''}
       ${v.agentDebateSummary ? `
       <div class="judge-section">
         <div class="judge-section-title">DEBATE SUMMARY</div>
-        <div class="judge-section-text">${v.agentDebateSummary}</div>
+        <div class="judge-section-text">${esc(v.agentDebateSummary)}</div>
       </div>` : ''}
     `;
     bodyEl.appendChild(section);
@@ -450,7 +484,7 @@ function buildReportMarkdown(): string {
   const lines: string[] = [];
   const v = latestVerdict;
 
-  lines.push('# ENG COMMITTEE AI — REVIEW REPORT', '');
+  lines.push('# ENG AI COMMITTEE — REVIEW REPORT', '');
 
   if (v) {
     lines.push(`## VERDICT: ${v.verdict.toUpperCase()}`, `**Judge certainty:** ${v.confidence}%`, '');
@@ -587,14 +621,14 @@ const editor = new Editor(editorHostEl, imageStripEl, filenameEl);
 
 setupUploadZone(uploadZoneEl, async (file) => {
   const uploadText = uploadZoneEl.querySelector('#upload-zone-text') as HTMLElement;
-  uploadText.innerHTML = `<span style="color:var(--color-gold)">⏳ Uploading ${file.name}...</span>`;
+  uploadText.innerHTML = `<span style="color:var(--color-gold)">⏳ Uploading ${esc(file.name)}...</span>`;
 
   let result: Awaited<ReturnType<typeof uploadFile>> | null = null;
   try {
     result = await uploadFile(file);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    uploadText.innerHTML = `<span style="color:var(--color-reject)">✗ Upload failed: ${msg}</span><br><br>Try again or use the paste option below.`;
+    uploadText.innerHTML = `<span style="color:var(--color-reject)">✗ Upload failed: ${esc(msg)}</span><br><br>Try again or use the paste option below.`;
     console.error('[upload] failed:', msg);
     return;
   }

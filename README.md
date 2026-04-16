@@ -2,6 +2,8 @@
 
 A multi-agent quality gate for engineering design docs. Three specialist agents review in parallel, an adversarial skeptic challenges weak findings, and a judge produces a **Pass / Revise / Reject** verdict. Available as a CLI tool and as a pixel-art web UI with real-time agent animations.
 
+![eng-ai-committee homepage](./assets/homepage.png)
+
 ---
 
 ## How it works
@@ -320,3 +322,21 @@ EOF
 
 npx tsx src/cli.ts /tmp/test.md --agents security-compliance
 ```
+
+---
+
+## Star History
+
+<a href="https://www.star-history.com/#victorlin-houzz/eng-ai-committee&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=victorlin-houzz/eng-ai-committee&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=victorlin-houzz/eng-ai-committee&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=victorlin-houzz/eng-ai-committee&type=Date" />
+ </picture>
+</a>
+
+---
+
+## License
+
+[MIT](./LICENSE)

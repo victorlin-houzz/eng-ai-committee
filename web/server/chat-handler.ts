@@ -1,10 +1,24 @@
 import type { Socket } from 'socket.io';
+import { timingSafeEqual } from 'node:crypto';
 import OpenAI from 'openai';
 import type { PipelineResult } from '../../src/pipeline/orchestrator.js';
-import { logEvent } from './history-store.js';
+import { logEvent, getRunMetadata } from './history-store.js';
 
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const JUDGE_MODEL = process.env.CHAT_MODEL ?? 'gpt-4o';
+
+function hasValidAccessToken(runId: string, accessToken?: string): boolean {
+  if (!accessToken) return false;
+  const meta = getRunMetadata(runId);
+  if (!meta?.accessToken) return false;
+  const expected = Buffer.from(meta.accessToken);
+  const actual = Buffer.from(accessToken);
+  return expected.length === actual.length && timingSafeEqual(expected, actual);
+}
+
+function isSafeRunId(runId: unknown): runId is string {
+  return typeof runId === 'string' && runId.length > 0 && runId.length <= 128 && /^[A-Za-z0-9_-]+$/.test(runId);
+}
 
 /** Max doc chars sent as context to keep tokens reasonable */
 const MAX_CTX_CHARS = 40_000;
@@ -43,12 +57,21 @@ export function registerChatHandler(
   socket: Socket,
   sessionResults: Map<string, { result: PipelineResult; docText: string }>,
 ): void {
-  socket.on('chat:message', async ({ runId, message, history, saveLog = true }: {
+  socket.on('chat:message', async ({ runId, message, history, accessToken, saveLog = true }: {
     runId: string;
     message: string;
     history: Array<{ role: 'user' | 'assistant'; content: string }>;
+    accessToken?: string;
     saveLog?: boolean;
   }) => {
+    if (!isSafeRunId(runId) || !hasValidAccessToken(runId, accessToken)) {
+      socket.emit('chat:error', { error: 'Forbidden' });
+      return;
+    }
+    if (typeof message !== 'string' || !Array.isArray(history)) {
+      socket.emit('chat:error', { error: 'Invalid request' });
+      return;
+    }
     const session = sessionResults.get(runId);
     if (!session) {
       socket.emit('chat:error', { error: 'Session not found. Please run a review first.' });

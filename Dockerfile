@@ -38,8 +38,11 @@ COPY --from=pipeline-build /app/dist/ ./dist/
 COPY --from=client-build   /app/dist/client/ ./dist/client/
 COPY --from=server-build   /app/dist/server/ ./dist/server/
 
-# Data directory for SQLite
-RUN mkdir -p /data
+# Data directory for SQLite — owned by the non-root `node` user that
+# ships with the official node:alpine image. Running the container as
+# root is an unnecessary privilege bump; a compromise of the express
+# process should not give an attacker UID 0 inside the container.
+RUN mkdir -p /data && chown -R node:node /data /app
 
 ENV PORT=3000 \
     DB_PATH=/data/reviews.db \
@@ -52,5 +55,7 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD wget -qO- http://localhost:3000/api/health || exit 1
 
 VOLUME ["/data"]
+
+USER node
 
 CMD ["node", "dist/server/web/server/index.js"]

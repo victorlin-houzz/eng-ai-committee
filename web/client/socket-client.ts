@@ -1,5 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 import type { PipelineEvent } from '../../src/pipeline/events.js';
+import { getRunAccessToken } from './run-access.js';
 
 export type { PipelineEvent };
 
@@ -33,9 +34,15 @@ export function createSocketClient(): SocketClient {
   return {
     socket,
     startReview(opts) { socket.emit('pipeline:run', opts); },
-    cancelReview(runId) { socket.emit('pipeline:cancel', { runId }); },
-    saveToArchive(opts) { socket.emit('archive:save', opts); },
-    sendChatMessage(opts) { socket.emit('chat:message', opts); },
+    cancelReview(runId) {
+      socket.emit('pipeline:cancel', { runId, accessToken: getRunAccessToken(runId) });
+    },
+    saveToArchive(opts) {
+      socket.emit('archive:save', { ...opts, accessToken: getRunAccessToken(opts.runId) });
+    },
+    sendChatMessage(opts) {
+      socket.emit('chat:message', { ...opts, accessToken: getRunAccessToken(opts.runId) });
+    },
     rejoinRun(runId, accessToken) { socket.emit('pipeline:rejoin', { runId, accessToken }); },
     on(event, handler) { socket.on(event as string, handler as any); },
     off(event, handler) { socket.off(event as string, handler as any); },
