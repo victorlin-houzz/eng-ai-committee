@@ -1,0 +1,211 @@
+/* ── Help / README Modal ──────────────────────────────────────────────── */
+#help-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  z-index: 600;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+#help-overlay.open { display: flex; }
+
+#help-dialog {
+  width: min(820px, 94vw);
+  height: min(88vh, 780px);
+  background: var(--color-panel);
+  border: 3px solid var(--color-gold);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#help-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 3px solid var(--color-border);
+  background: var(--color-bg);
+  flex-shrink: 0;
+}
+#help-title {
+  font-size: 11px;
+  color: var(--color-gold);
+  letter-spacing: 2px;
+  text-shadow: 0 0 8px var(--color-gold);
+}
+#help-close {
+  font-size: 11px;
+  background: none;
+  border: none;
+  color: var(--color-text-dim);
+  cursor: pointer;
+  font-family: var(--pixel-font);
+  padding: 4px 8px;
+}
+#help-close:hover { color: var(--color-accent); }
+
+#help-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+}
+
+/* Section headings */
+.help-section {
+  margin-bottom: 28px;
+}
+.help-h1 {
+  font-size: 13px;
+  color: var(--color-gold);
+  border-bottom: 2px solid var(--color-border);
+  padding-bottom: 6px;
+  margin-bottom: 14px;
+  letter-spacing: 1px;
+}
+.help-h2 {
+  font-size: 10px;
+  color: var(--color-gold);
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+}
+.help-p {
+  font-size: 9px;
+  line-height: 2;
+  color: var(--color-text);
+  font-family: monospace;
+  margin-bottom: 8px;
+}
+.help-p strong {
+  color: var(--color-gold);
+  font-family: var(--pixel-font);
+  font-size: 8px;
+}
+
+/* Flow steps */
+.help-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.help-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 8px 10px;
+  border: 2px solid var(--color-border);
+  background: rgba(255,255,255,0.02);
+}
+.help-step-num {
+  font-size: 9px;
+  color: var(--color-gold);
+  width: 20px;
+  flex-shrink: 0;
+  text-align: center;
+  margin-top: 2px;
+}
+.help-step-body { flex: 1; }
+.help-step-title {
+  font-size: 9px;
+  color: var(--color-text);
+  margin-bottom: 4px;
+}
+.help-step-desc {
+  font-size: 8px;
+  color: var(--color-text-dim);
+  line-height: 1.8;
+  font-family: monospace;
+}
+
+/* Pipeline stages */
+.help-pipeline {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+.help-stage {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  border: 2px solid var(--color-border);
+  overflow: hidden;
+}
+.help-stage-badge {
+  width: 100px;
+  background: var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 7px;
+  color: var(--color-gold);
+  letter-spacing: 0.5px;
+  text-align: center;
+  padding: 6px 4px;
+  flex-shrink: 0;
+  line-height: 1.5;
+}
+.help-stage-desc {
+  padding: 6px 10px;
+  font-size: 8px;
+  color: var(--color-text);
+  font-family: monospace;
+  line-height: 1.8;
+  display: flex;
+  align-items: center;
+}
+.help-stage-arrow {
+  font-size: 10px;
+  color: var(--color-border);
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+}
+
+/* Agent roster */
+.help-agents {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.help-agent-card {
+  padding: 8px 10px;
+  border: 2px solid var(--color-border);
+  background: rgba(255,255,255,0.02);
+}
+.help-agent-name {
+  font-size: 8px;
+  color: var(--color-gold);
+  margin-bottom: 5px;
+  letter-spacing: 0.5px;
+}
+.help-agent-desc {
+  font-size: 8px;
+  color: var(--color-text-dim);
+  font-family: monospace;
+  line-height: 1.8;
+}
+
+/* Tips */
+.help-tips {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.help-tip {
+  padding: 6px 10px;
+  border-left: 3px solid var(--color-gold);
+  font-size: 8px;
+  color: var(--color-text);
+  font-family: monospace;
+  line-height: 1.8;
+  background: rgba(255, 215, 0, 0.04);
+}
+.help-tip strong {
+  color: var(--color-gold);
+  font-family: var(--pixel-font);
+  font-size: 7px;
+}

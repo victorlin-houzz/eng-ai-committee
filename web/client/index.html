@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ENG COMMITTEE AI</title>
+</head>
+<body>
+  <div id="app">
+
+    <!-- ── Toolbar ──────────────────────────────────────────────────── -->
+    <div id="toolbar">
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="pixel-btn" id="toolbar-archive-btn">📁 History</button>
+        <span id="toolbar-title">⚖ ENG COMMITTEE AI</span>
+      </div>
+      <div id="toolbar-actions">
+        <button class="pixel-btn" id="toolbar-report-btn" style="display:none;">📊 Report</button>
+        <button class="pixel-btn" id="toolbar-export-report-btn" style="display:none;">📋 Export Report</button>
+        <button class="pixel-btn" id="toolbar-help-btn">? How It Works</button>
+        <button class="pixel-btn" id="toolbar-save-btn">💾 Save</button>
+        <button class="pixel-btn" id="toolbar-export-btn">📄 Export Doc</button>
+      </div>
+    </div>
+
+    <!-- ── Content ──────────────────────────────────────────────────── -->
+    <div id="content">
+
+      <!-- Review History sidebar (hidden by default, toggled by toolbar button) -->
+      <div id="archive-panel" class="pixel-box" style="display:none;">
+        <div id="archive-header">
+          <div id="archive-title">📁 REVIEW HISTORY</div>
+          <button id="archive-close-btn" class="pixel-btn" style="font-size:7px;padding:3px 6px;">✕</button>
+        </div>
+        <div id="archive-list"></div>
+      </div>
+
+      <!-- Meeting room (center) -->
+      <div id="room-panel">
+        <div id="room"></div>
+      </div>
+
+      <div id="panel-resizer" title="Drag to resize editor"></div>
+
+      <!-- Right panel: Editor + Chat -->
+      <div id="right-panel" class="pixel-box">
+        <div id="right-tabs">
+          <div class="right-tab active" data-tab="editor">📝 Editor</div>
+          <div class="right-tab" data-tab="log">📋 Log</div>
+        </div>
+
+        <!-- Editor panel -->
+        <div id="editor-panel" style="display:flex;">
+          <div id="editor-header">
+            <span id="editor-filename">No document loaded</span>
+            <div id="editor-actions">
+              <!-- actions populated by JS -->
+            </div>
+          </div>
+
+          <!-- Upload zone (shown until doc loaded) -->
+          <div id="upload-zone">
+            <div id="upload-zone-icon">📂</div>
+            <div id="upload-zone-text">
+              Click or drag &amp; drop your design doc<br>
+              Supports PDF · DOCX · Markdown · TXT · ZIP
+            </div>
+            <button class="pixel-btn" id="paste-text-btn" style="margin-top:4px;">✎ Paste Text Instead</button>
+          </div>
+          <!-- Paste text fallback (hidden by default) -->
+          <div id="paste-zone" style="display:none;flex:1;flex-direction:column;padding:8px;gap:6px;">
+            <div style="font-size:14px;color:var(--color-text-dim);">Paste your document text below:</div>
+            <textarea id="paste-textarea" style="flex:1;background:#0d1117;color:#e6edf3;border:2px solid var(--color-border);font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;font-size:15px;padding:8px;resize:none;min-height:200px;" placeholder="Paste markdown or plain text here..."></textarea>
+            <button class="pixel-btn success" id="paste-confirm-btn">✓ Use This Text</button>
+          </div>
+
+          <!-- CodeMirror host (hidden until doc loaded) -->
+          <div id="editor-host" style="display:none;flex:1;overflow:auto;"></div>
+
+          <!-- Image strip (below editor) -->
+          <div id="image-strip"></div>
+
+          <!-- Review controls -->
+          <div id="review-controls">
+            <div id="review-options">
+              <div class="review-options-row">
+                <span class="option-label">Agents:</span>
+                <select id="agents-select" class="option-select">
+                  <option value="all">All</option>
+                  <option value="security-compliance">Security</option>
+                  <option value="architecture-infra">Architecture</option>
+                  <option value="product-ops">Product</option>
+                </select>
+              </div>
+              <div class="review-options-row">
+                <span class="option-label">Debate Rounds:</span>
+                <select id="depth-select" class="option-select">
+                  <option value="1">1 round</option>
+                  <option value="2">2 rounds</option>
+                </select>
+              </div>
+            </div>
+            <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+            <button class="pixel-btn primary" id="start-review-btn" disabled>▶ Start Review</button>
+          </div>
+        </div>
+
+        <!-- Log panel (3rd tab — live pipeline log) -->
+        <div id="log-panel">
+          <div id="log-panel-filter">
+            <button class="log-filter-btn active" data-filter="all">All</button>
+            <button class="log-filter-btn" data-filter="pipeline_event">Pipeline</button>
+            <button class="log-filter-btn" data-filter="progress">Progress</button>
+            <button class="log-filter-btn" data-filter="chat_assistant">Judge</button>
+          </div>
+          <div id="log-panel-body"></div>
+          <div id="log-panel-footer"></div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Archive detail drawer -->
+    <div id="archive-detail">
+      <div id="archive-detail-header">
+        <span id="archive-detail-title">Review Detail</span>
+        <button id="archive-detail-close">✕</button>
+      </div>
+      <div id="archive-detail-body"></div>
+      <div id="archive-detail-actions"></div>
+    </div>
+
+  </div>
+
+  <!-- ── Findings Detail Modal ─────────────────────────────────────────── -->
+  <div id="findings-overlay">
+    <div id="findings-dialog">
+      <div id="findings-header">
+        <span id="findings-title">FINDINGS</span>
+        <button id="findings-close">✕</button>
+      </div>
+      <div id="findings-body"></div>
+    </div>
+  </div>
+
+  <!-- ── Skeptic Debate Modal ─────────────────────────────────────────── -->
+  <div id="skeptic-overlay" class="agent-modal-overlay">
+    <div id="skeptic-dialog" class="agent-modal-dialog">
+      <div class="agent-modal-header">
+        <span class="agent-modal-title">⚔ SKEPTIC — DEBATE RECORD</span>
+        <button class="agent-modal-close" id="skeptic-close">✕</button>
+      </div>
+      <div id="skeptic-body" class="agent-modal-body"></div>
+    </div>
+  </div>
+
+  <!-- ── Judge Verdict Modal ───────────────────────────────────────────── -->
+  <div id="judge-overlay" class="agent-modal-overlay">
+    <div id="judge-dialog" class="agent-modal-dialog">
+      <div class="agent-modal-header">
+        <span class="agent-modal-title">⚖ JUDGE — FULL VERDICT</span>
+        <button class="agent-modal-close" id="judge-close">✕</button>
+      </div>
+      <div id="judge-body" class="agent-modal-body"></div>
+    </div>
+  </div>
+
+  <!-- ── Full Review Report Modal ──────────────────────────────────────── -->
+  <div id="report-overlay" class="agent-modal-overlay">
+    <div id="report-dialog" class="agent-modal-dialog">
+      <div class="agent-modal-header">
+        <span class="agent-modal-title">📊 FULL REVIEW REPORT</span>
+        <button class="agent-modal-close" id="report-close">✕</button>
+      </div>
+      <div id="report-filter">
+        <div class="report-filter-group">
+          <button class="report-filter-btn agent-filter active" data-agent="all">All Agents</button>
+          <button class="report-filter-btn agent-filter" data-agent="security-compliance">Security</button>
+          <button class="report-filter-btn agent-filter" data-agent="architecture-infra">Architecture</button>
+          <button class="report-filter-btn agent-filter" data-agent="product-ops">Product</button>
+        </div>
+        <div class="report-filter-group">
+          <button class="report-filter-btn sev-filter active" data-sev="all">All</button>
+          <button class="report-filter-btn sev-filter" data-sev="Critical">Critical</button>
+          <button class="report-filter-btn sev-filter" data-sev="High">High</button>
+          <button class="report-filter-btn sev-filter" data-sev="Medium">Medium</button>
+          <button class="report-filter-btn sev-filter" data-sev="Low">Low</button>
+        </div>
+      </div>
+      <div id="report-body" class="agent-modal-body"></div>
+    </div>
+  </div>
+
+  <!-- ── Help / README Dialog ──────────────────────────────────────── -->
+  <div id="help-overlay">
+    <div id="help-dialog">
+      <div id="help-header">
+        <span id="help-title">⚖ HOW IT WORKS</span>
+        <button id="help-close">✕ CLOSE</button>
+      </div>
+      <div id="help-body">
+
+        <!-- Usage flow -->
+        <div class="help-section">
+          <div class="help-h1">USING THE APP</div>
+          <div class="help-flow">
+            <div class="help-step">
+              <div class="help-step-num">1</div>
+              <div class="help-step-body">
+                <div class="help-step-title">UPLOAD YOUR DESIGN DOC</div>
+                <div class="help-step-desc">Click the upload zone on the right or drag &amp; drop a file. Supported formats: PDF, DOCX, Markdown, TXT, ZIP. ZIP files are unpacked and supported files are merged into the editor; images are shown in the image strip.</div>
+              </div>
+            </div>
+            <div class="help-step">
+              <div class="help-step-num">2</div>
+              <div class="help-step-body">
+                <div class="help-step-title">EDIT BEFORE REVIEW (OPTIONAL)</div>
+                <div class="help-step-desc">The doc opens in a live Markdown editor. Make any last-minute edits. The review will use whatever text is in the editor at the time you click Start Review.</div>
+              </div>
+            </div>
+            <div class="help-step">
+              <div class="help-step-num">3</div>
+              <div class="help-step-body">
+                <div class="help-step-title">START REVIEW</div>
+                <div class="help-step-desc">Click "▶ Start Review". Watch the agents in the meeting room think, debate, and reach a verdict in real time. The whole pipeline takes 1–3 minutes depending on doc length.</div>
+              </div>
+            </div>
+            <div class="help-step">
+              <div class="help-step-num">4</div>
+              <div class="help-step-body">
+                <div class="help-step-title">SAVE &amp; EXPORT</div>
+                <div class="help-step-desc">Click "💾 Save" to archive the review. Then "📄 Export Doc" to download the final document as DOCX or PDF with all embedded images restored.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pipeline stages -->
+        <div class="help-section">
+          <div class="help-h1">THE 5-STAGE REVIEW PIPELINE</div>
+          <div class="help-pipeline">
+            <div class="help-stage">
+              <div class="help-stage-badge">STAGE 1<br>STRUCTURAL<br>CHECK</div>
+              <div class="help-stage-desc">A fast pre-screen checks that the doc has the required sections (problem statement, solution, metrics, rollback plan). Missing sections are flagged immediately before the expensive LLM calls begin.</div>
+            </div>
+            <div class="help-stage">
+              <div class="help-stage-badge">STAGE 2<br>SPECIALIST<br>REVIEW</div>
+              <div class="help-stage-desc">Three specialist agents run in parallel, each examining the doc through a different lens: Security &amp; Compliance, Architecture &amp; Infrastructure, and Product &amp; Operations. Each surfaces findings with severity levels (Low → Critical).</div>
+            </div>
+            <div class="help-stage">
+              <div class="help-stage-badge">STAGE 3<br>DEDUPLICATION</div>
+              <div class="help-stage-desc">All findings from the three specialists are merged and deduplicated. Overlapping or near-duplicate issues are collapsed so the debate focuses on unique concerns only.</div>
+            </div>
+            <div class="help-stage">
+              <div class="help-stage-badge">STAGE 4<br>SKEPTIC<br>DEBATE</div>
+              <div class="help-stage-desc">The Skeptic agent challenges each finding: "Is this actually a real problem, or a false alarm?" Specialists defend their findings. The Skeptic rates each rebuttal as Convincing or Unconvincing. Unconvincing findings are dropped. Multiple debate rounds are supported.</div>
+            </div>
+            <div class="help-stage">
+              <div class="help-stage-badge">STAGE 5<br>JUDGE<br>VERDICT</div>
+              <div class="help-stage-desc">The Judge reviews all surviving findings and issues one of three verdicts: <strong>Pass</strong> (ship it), <strong>Revise</strong> (address issues and resubmit), or <strong>Reject</strong> (fundamental problems — do not proceed). A confidence score and revision memo are included.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Agents -->
+        <div class="help-section">
+          <div class="help-h1">THE AGENTS</div>
+          <div class="help-agents">
+            <div class="help-agent-card">
+              <div class="help-agent-name">SECURITY &amp; COMPLIANCE</div>
+              <div class="help-agent-desc">Reviews auth, data handling, secrets management, PII exposure, dependency vulnerabilities, and regulatory compliance (SOC2, GDPR). Flags anything that could create a security incident or compliance violation.</div>
+            </div>
+            <div class="help-agent-card">
+              <div class="help-agent-name">ARCHITECTURE &amp; INFRA</div>
+              <div class="help-agent-desc">Evaluates system design: scalability, single points of failure, data consistency, service boundaries, infrastructure costs, deployment complexity, and observability (metrics, logging, alerting).</div>
+            </div>
+            <div class="help-agent-card">
+              <div class="help-agent-name">PRODUCT &amp; OPS</div>
+              <div class="help-agent-desc">Assesses product-market fit, success metrics, rollback plan, phased rollout strategy, on-call readiness, support burden, and whether the doc clearly communicates the "why" to stakeholders.</div>
+            </div>
+            <div class="help-agent-card">
+              <div class="help-agent-name">SKEPTIC</div>
+              <div class="help-agent-desc">The devil's advocate. Challenges every finding from the specialists and forces them to defend their position. Filters out over-engineered concerns, false alarms, and nitpicks — keeping only findings that truly matter.</div>
+            </div>
+            <div class="help-agent-card">
+              <div class="help-agent-name">JUDGE</div>
+              <div class="help-agent-desc">The final decision-maker. Weighs all surviving findings holistically and issues the committee verdict. Also available for post-review chat to discuss findings and suggest specific doc improvements.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Verdicts -->
+        <div class="help-section">
+          <div class="help-h1">VERDICTS</div>
+          <div class="help-tips">
+            <div class="help-tip"><strong class="verdict-Pass">PASS</strong> — The design is approved. No blocking issues remain. You may proceed to implementation.</div>
+            <div class="help-tip"><strong class="verdict-Revise">REVISE</strong> — The design has addressable issues. Update the doc per the revision memo and resubmit for another review cycle.</div>
+            <div class="help-tip"><strong class="verdict-Reject">REJECT</strong> — The design has fundamental problems that require a rethink. Address the core issues before resubmitting.</div>
+          </div>
+        </div>
+
+        <!-- Tips -->
+        <div class="help-section">
+          <div class="help-h1">TIPS</div>
+          <div class="help-tips">
+            <div class="help-tip"><strong>BEST RESULTS</strong> — Include a clear problem statement, proposed solution, success metrics, failure modes, rollback plan, and infra cost estimate in your doc.</div>
+            <div class="help-tip"><strong>DEBATE ROUNDS</strong> — "1 round" of debate is usually enough. Use "2 rounds" for contentious docs where findings may need deeper scrutiny.</div>
+            <div class="help-tip"><strong>LOG TAB</strong> — The 📋 Log tab shows the full pipeline timeline: every stage, every agent action, and every finding in real time.</div>
+            <div class="help-tip"><strong>SAVE FIRST</strong> — Click 💾 Save before exporting to ensure the archive captures your latest edits. Unsaved changes are only in memory.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Conversation Log Dialog ──────────────────────────────────── -->
+  <div id="convlog-overlay">
+    <div id="convlog-dialog">
+      <div id="convlog-header">
+        <span id="convlog-title">📋 CONVERSATION LOG</span>
+        <button id="convlog-close">✕</button>
+      </div>
+      <div id="convlog-filter">
+        <button class="convlog-filter-btn active" data-filter="all">All</button>
+        <button class="convlog-filter-btn" data-filter="pipeline_event">Pipeline Events</button>
+        <button class="convlog-filter-btn" data-filter="chat_user">Your Messages</button>
+        <button class="convlog-filter-btn" data-filter="chat_assistant">Judge Replies</button>
+        <button class="convlog-filter-btn" data-filter="progress">Progress</button>
+      </div>
+      <div id="convlog-body"></div>
+      <div id="convlog-footer"></div>
+    </div>
+  </div>
+
+  <script type="module" src="./main.ts"></script>
+</body>
+</html>

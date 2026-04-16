@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 48" shape-rendering="crispEdges">
+  <!-- Body (dark blue uniform) -->
+  <rect x="10" y="18" width="12" height="16" fill="#1a3a6b"/>
+  <!-- Head -->
+  <rect x="11" y="8" width="10" height="10" fill="#f5c5a3"/>
+  <!-- Hair -->
+  <rect x="11" y="8" width="10" height="3" fill="#2c1810"/>
+  <!-- Eyes -->
+  <rect x="13" y="13" width="2" height="2" fill="#1a1a2e"/>
+  <rect x="17" y="13" width="2" height="2" fill="#1a1a2e"/>
+  <!-- Mouth (stern) -->
+  <rect x="13" y="16" width="6" height="1" fill="#c0907a"/>
+  <!-- Shield badge -->
+  <rect x="13" y="22" width="6" height="7" fill="#4a90d9"/>
+  <rect x="14" y="23" width="4" height="5" fill="#2c5f8a"/>
+  <rect x="15" y="24" width="2" height="3" fill="#ffd700"/>
+  <!-- Arms -->
+  <rect x="7" y="18" width="3" height="10" fill="#1a3a6b"/>
+  <rect x="22" y="18" width="3" height="10" fill="#1a3a6b"/>
+  <!-- Hands -->
+  <rect x="7" y="28" width="3" height="3" fill="#f5c5a3"/>
+  <rect x="22" y="28" width="3" height="3" fill="#f5c5a3"/>
+  <!-- Legs -->
+  <rect x="10" y="34" width="5" height="10" fill="#0d1f3c"/>
+  <rect x="17" y="34" width="5" height="10" fill="#0d1f3c"/>
+  <!-- Boots -->
+  <rect x="10" y="44" width="5" height="4" fill="#1a1a1a"/>
+  <rect x="17" y="44" width="5" height="4" fill="#1a1a1a"/>
+  <!-- Collar -->
+  <rect x="12" y="18" width="8" height="2" fill="#c0c0c0"/>
+</svg>

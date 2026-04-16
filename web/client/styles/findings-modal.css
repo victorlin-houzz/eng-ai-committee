@@ -1,0 +1,364 @@
+/* ── Findings / Detail Modal ──────────────────────────────────────────── */
+#findings-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 550;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+#findings-overlay.open { display: flex; }
+
+#findings-dialog {
+  width: min(640px, 92vw);
+  max-height: 80vh;
+  background: var(--color-panel);
+  border: 3px solid var(--color-gold);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#findings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 2px solid var(--color-border);
+  background: var(--color-bg);
+  flex-shrink: 0;
+}
+#findings-title {
+  font-size: 10px;
+  color: var(--color-gold);
+  letter-spacing: 1px;
+}
+#findings-close {
+  font-size: 10px;
+  background: none;
+  border: none;
+  color: var(--color-text-dim);
+  cursor: pointer;
+  font-family: var(--pixel-font);
+  padding: 2px 6px;
+}
+#findings-close:hover { color: var(--color-accent); }
+
+#findings-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.finding-card {
+  border: 2px solid var(--color-border);
+  padding: 10px 12px;
+}
+.finding-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.finding-sev-badge {
+  font-size: 7px;
+  padding: 2px 6px;
+  border: 1px solid currentColor;
+  flex-shrink: 0;
+}
+.finding-title {
+  font-size: 11px;
+  color: var(--color-text);
+}
+.finding-detail {
+  font-size: 10px;
+  color: var(--color-text-dim);
+  font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+  line-height: 1.8;
+  margin-bottom: 6px;
+}
+.finding-excerpt {
+  font-size: 10px;
+  font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+  color: #a0c8ff;
+  border-left: 3px solid var(--color-border);
+  padding: 4px 8px;
+  margin-bottom: 6px;
+  font-style: italic;
+  line-height: 1.7;
+}
+.finding-rec {
+  font-size: 10px;
+  font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+  color: var(--color-pass);
+  line-height: 1.7;
+}
+.finding-rec::before { content: '→ '; }
+
+/* Debate log panel layout is defined in room.css — no overrides here */
+
+.debate-entry {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  animation: drop-in 0.2s ease-out;
+}
+.debate-entry-who {
+  font-size: 6px;
+  color: var(--color-gold);
+  width: 72px;
+  flex-shrink: 0;
+  padding-top: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.debate-entry-who.skeptic { color: #cc88ff; }
+.debate-entry-who.specialist { color: #88ccff; }
+.debate-entry-who.rating-pass  { color: var(--color-pass); }
+.debate-entry-who.rating-fail  { color: var(--color-reject); }
+
+.debate-entry-body {
+  flex: 1;
+}
+.debate-entry-finding {
+  font-size: 7px;
+  color: var(--color-gold);
+  margin-bottom: 2px;
+  font-family: monospace;
+}
+.debate-entry-text {
+  font-size: 8px;
+  color: var(--color-text);
+  font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+  line-height: 1.7;
+}
+.debate-entry-rating {
+  font-size: 7px;
+  padding: 1px 5px;
+  border: 1px solid currentColor;
+  display: inline-block;
+  margin-top: 3px;
+}
+.debate-entry-rating.convincing  { color: var(--color-pass); }
+.debate-entry-rating.unconvincing { color: var(--color-reject); }
+
+/* Agent clickable hint */
+.agent[data-clickable="true"] {
+  cursor: pointer;
+}
+.agent[data-clickable="true"]:hover .agent-sprite {
+  filter: drop-shadow(0 0 8px var(--color-gold)) brightness(1.15);
+}
+.agent-click-hint {
+  font-size: 6px;
+  color: var(--color-gold);
+  text-align: center;
+  margin-top: 2px;
+  opacity: 0.7;
+  animation: blink 1.5s step-end infinite;
+}
+
+/* ── Shared agent modal (skeptic, judge, report) ─────────────────────── */
+.agent-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.78);
+  z-index: 560;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.agent-modal-overlay.open { display: flex; }
+
+.agent-modal-dialog {
+  width: min(720px, 94vw);
+  max-height: 86vh;
+  background: var(--color-panel);
+  border: 3px solid var(--color-gold);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#report-dialog { width: min(880px, 96vw); }
+
+.agent-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 2px solid var(--color-border);
+  background: var(--color-bg);
+  flex-shrink: 0;
+}
+.agent-modal-title {
+  font-size: 10px;
+  color: var(--color-gold);
+  letter-spacing: 1px;
+}
+.agent-modal-close {
+  font-size: 10px;
+  background: none;
+  border: none;
+  color: var(--color-text-dim);
+  cursor: pointer;
+  font-family: var(--pixel-font);
+  padding: 2px 6px;
+}
+.agent-modal-close:hover { color: var(--color-accent); }
+
+.agent-modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ── Debate cards (used in Skeptic modal + Report modal) ─────────────── */
+.debate-card {
+  border: 2px solid var(--color-border);
+  padding: 12px 14px;
+}
+.debate-card-title {
+  font-size: 11px;
+  color: var(--color-gold);
+  margin-bottom: 10px;
+}
+.debate-card-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 8px;
+  align-items: flex-start;
+}
+.debate-card-who {
+  font-size: 8px;
+  width: 90px;
+  flex-shrink: 0;
+  text-transform: uppercase;
+  padding-top: 3px;
+  letter-spacing: 0.5px;
+}
+.debate-card-who.skeptic-who   { color: #cc88ff; }
+.debate-card-who.specialist-who { color: #88ccff; }
+.debate-card-who.verdict-convincing   { color: var(--color-pass); }
+.debate-card-who.verdict-unconvincing { color: var(--color-reject); }
+.debate-card-text {
+  flex: 1;
+  font-size: 10px;
+  font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+  color: var(--color-text);
+  line-height: 1.8;
+}
+.debate-card-text.dim { color: var(--color-text-dim); }
+
+/* ── Judge modal sections ─────────────────────────────────────────────── */
+.judge-verdict-hero {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 2px solid;
+  margin-bottom: 4px;
+}
+.judge-verdict-hero.verdict-Pass   { border-color: var(--color-pass);   background: rgba(76,175,80,0.08); }
+.judge-verdict-hero.verdict-Revise { border-color: var(--color-revise); background: rgba(255,152,0,0.08); }
+.judge-verdict-hero.verdict-Reject { border-color: var(--color-reject); background: rgba(244,67,54,0.08); }
+.judge-verdict-word {
+  font-size: 16px;
+  letter-spacing: 2px;
+}
+.judge-verdict-hero.verdict-Pass   .judge-verdict-word { color: var(--color-pass); }
+.judge-verdict-hero.verdict-Revise .judge-verdict-word { color: var(--color-revise); }
+.judge-verdict-hero.verdict-Reject .judge-verdict-word { color: var(--color-reject); }
+.judge-confidence {
+  font-size: 9px;
+  color: var(--color-text-dim);
+}
+.judge-section {
+  border: 1px solid var(--color-border);
+  padding: 10px 12px;
+}
+.judge-section-title {
+  font-size: 8px;
+  color: var(--color-gold);
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.judge-section-text {
+  font-size: 10px;
+  font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+  color: var(--color-text);
+  line-height: 1.9;
+  white-space: pre-wrap;
+}
+.judge-blocking-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+  font-size: 10px;
+  font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+  color: var(--color-text);
+}
+
+/* ── Report filter bar ───────────────────────────────────────────────── */
+#report-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  padding: 8px 14px;
+  border-bottom: 2px solid var(--color-border);
+  background: var(--color-bg);
+  flex-shrink: 0;
+}
+
+.report-filter-group {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.report-filter-btn {
+  font-size: 7px;
+  padding: 3px 8px;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-dim);
+  cursor: pointer;
+  font-family: var(--pixel-font);
+  letter-spacing: 0.5px;
+  transition: border-color 0.1s, color 0.1s;
+}
+
+.report-filter-btn:hover {
+  border-color: var(--color-gold);
+  color: var(--color-text);
+}
+
+.report-filter-btn.active {
+  border-color: var(--color-gold);
+  color: var(--color-gold);
+  background: rgba(255, 215, 0, 0.08);
+}
+
+.report-filter-btn[data-sev="Critical"].active { border-color: var(--color-critical); color: var(--color-critical); background: rgba(244,67,54,0.08); }
+.report-filter-btn[data-sev="High"].active     { border-color: var(--color-high);     color: var(--color-high);     background: rgba(255,152,0,0.08); }
+.report-filter-btn[data-sev="Medium"].active   { border-color: var(--color-medium);   color: var(--color-medium);   background: rgba(255,235,59,0.08); }
+.report-filter-btn[data-sev="Low"].active      { border-color: var(--color-low);      color: var(--color-low);      background: rgba(100,181,246,0.08); }
+
+/* ── Report modal sections ───────────────────────────────────────────── */
+.report-section { margin-bottom: 6px; }
+.report-section-title {
+  font-size: 10px;
+  color: var(--color-gold);
+  letter-spacing: 1px;
+  padding: 8px 0 8px 0;
+  border-bottom: 2px solid var(--color-border);
+  margin-bottom: 10px;
+}

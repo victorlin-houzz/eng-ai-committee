@@ -1,0 +1,198 @@
+@font-face {
+  font-family: 'Press Start 2P';
+  src: url('/fonts/PressStart2P.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ── CSS Variables ───────────────────────────────────────────────────── */
+:root {
+  --pixel-font: 'Press Start 2P', monospace;
+  --color-bg:        #1a1a2e;
+  --color-panel:     #16213e;
+  --color-border:    #0f3460;
+  --color-accent:    #e94560;
+  --color-gold:      #ffd700;
+  --color-wood:      #8b5e3c;
+  --color-floor:     #9f7a53;
+  --color-pass:      #4caf50;
+  --color-revise:    #ff9800;
+  --color-reject:    #f44336;
+  --color-low:       #9e9e9e;
+  --color-medium:    #ff9800;
+  --color-high:      #f44336;
+  --color-critical:  #9c27b0;
+  --color-text:      #e0e0e0;
+  --color-text-dim:  #b8c0d0;
+  --right-panel-width: 320px;
+  --pixel-border: 2px solid var(--color-border);
+}
+
+/* ── Reset ───────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--pixel-font);
+  font-size: 13px;
+}
+
+/* ── Pixel borders ───────────────────────────────────────────────────── */
+.pixel-box {
+  border: 3px solid var(--color-border);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
+}
+
+.pixel-btn {
+  font-family: var(--pixel-font);
+  font-size: 11px;
+  background: var(--color-border);
+  color: var(--color-gold);
+  border: 2px solid var(--color-gold);
+  padding: 8px 12px;
+  cursor: pointer;
+  image-rendering: pixelated;
+  transition: background 0.1s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.pixel-btn:hover { background: var(--color-accent); color: #fff; }
+.pixel-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.pixel-btn.primary { background: var(--color-accent); color: #fff; border-color: #fff; }
+.pixel-btn.success { background: var(--color-pass); color: #fff; border-color: #fff; }
+
+/* ── Verdict colors ──────────────────────────────────────────────────── */
+.verdict-Pass    { color: var(--color-pass); }
+.verdict-Revise  { color: var(--color-revise); }
+.verdict-Reject  { color: var(--color-reject); }
+.sev-Low      { color: var(--color-low); }
+.sev-Medium   { color: var(--color-medium); }
+.sev-High     { color: var(--color-high); }
+.sev-Critical { color: var(--color-critical); }
+
+/* ── Main layout ─────────────────────────────────────────────────────── */
+#app {
+  display: grid;
+  grid-template-rows: 40px 1fr;
+  grid-template-columns: 1fr;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* ── Toolbar ─────────────────────────────────────────────────────────── */
+#toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  background: var(--color-panel);
+  border-bottom: 3px solid var(--color-border);
+  z-index: 100;
+}
+#toolbar-title {
+  font-size: 14px;
+  color: var(--color-gold);
+  letter-spacing: 0.8px;
+  text-shadow: 0 0 8px var(--color-gold);
+}
+#toolbar-actions { display: flex; gap: 8px; align-items: center; }
+
+/* ── Content area ────────────────────────────────────────────────────── */
+#content {
+  display: flex;
+  overflow: hidden;
+  height: 100%;
+}
+
+#archive-panel {
+  width: 220px;
+  flex-shrink: 0;
+}
+
+#room-panel {
+  flex: 1;
+  min-width: 0;
+}
+
+#right-panel {
+  width: var(--right-panel-width);
+  flex-shrink: 0;
+}
+
+#panel-resizer {
+  width: 10px;
+  flex-shrink: 0;
+  cursor: col-resize;
+  background: linear-gradient(180deg, #0f3460, #173f71);
+  border-left: 1px solid #0b2a4d;
+  border-right: 1px solid #244e7f;
+}
+
+#panel-resizer:hover,
+#content.resizing #panel-resizer {
+  background: linear-gradient(180deg, #1f4f86, #2e6ca9);
+}
+
+#content.resizing,
+#content.resizing * {
+  cursor: col-resize !important;
+  user-select: none !important;
+}
+
+/* ── Scrollbars ──────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--color-panel); }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 0; }
+
+/* ── Animations ──────────────────────────────────────────────────────── */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-4px); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-4px); }
+  40%       { transform: translateX(4px); }
+  60%       { transform: translateX(-4px); }
+  80%       { transform: translateX(4px); }
+}
+
+@keyframes drop-in {
+  from { transform: translateY(-100%); opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+
+@keyframes confetti-fall {
+  0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100px) rotate(360deg); opacity: 0; }
+}
+
+@keyframes draw-line {
+  from { stroke-dashoffset: 200; }
+  to   { stroke-dashoffset: 0; }
+}
+
+@keyframes dot-pulse {
+  0%, 100% { opacity: 0.2; transform: scale(0.8); }
+  50%       { opacity: 1;   transform: scale(1.1); }
+}
+
+@keyframes flash {
+  0%, 100% { filter: brightness(1); }
+  50%       { filter: brightness(1.8); }
+}

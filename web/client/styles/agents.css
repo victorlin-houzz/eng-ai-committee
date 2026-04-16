@@ -1,0 +1,157 @@
+/* ── Agent characters ────────────────────────────────────────────────── */
+.agent {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10;
+  cursor: default;
+  transition: transform 0.15s ease;
+}
+
+.agent-sprite {
+  width: 56px;
+  height: 84px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  filter: drop-shadow(2px 4px 4px rgba(0,0,0,0.5));
+  transition: filter 0.3s;
+}
+
+.agent.state-idle .agent-sprite {
+  animation: none;
+}
+
+.agent.state-thinking .agent-sprite {
+  animation: bounce 0.8s ease-in-out infinite;
+  filter: drop-shadow(2px 4px 4px rgba(0,0,0,0.5)) brightness(1.1);
+}
+
+.agent.state-speaking .agent-sprite {
+  animation: bounce 0.4s ease-in-out 2;
+}
+
+.agent.state-celebrating .agent-sprite {
+  animation: bounce 0.3s ease-in-out infinite;
+  filter: drop-shadow(0 0 8px var(--color-gold)) brightness(1.2);
+}
+
+.agent.state-error .agent-sprite {
+  animation: shake 0.4s ease-in-out;
+  filter: drop-shadow(0 0 6px var(--color-reject));
+}
+
+.agent-name {
+  font-size: 10px;
+  color: #1f2937;
+  margin-top: 4px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: rgba(245, 226, 201, 0.95);
+  border: 1px solid rgba(69, 45, 24, 0.35);
+  text-align: center;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+
+.agent.state-thinking .agent-name {
+  color: #1f2937;
+  border-color: rgba(255, 215, 0, 0.9);
+  box-shadow: 0 0 0 1px rgba(255, 215, 0, 0.35);
+}
+.agent.state-celebrating .agent-name { color: var(--color-pass); }
+.agent.state-error .agent-name { color: var(--color-reject); }
+
+/* ── Seat positions (relative to #room, placed by JS) ── */
+/* Judge: top center */
+[data-agent="judge"]               { top: 10%; left: 50%; transform: translateX(-50%); }
+/* Security: left */
+[data-agent="security-compliance"] { top: 45%; left: 8%; }
+/* Architecture: right top */
+[data-agent="architecture-infra"]  { top: 30%; right: 8%; }
+/* Product: right bottom */
+[data-agent="product-ops"]         { top: 60%; right: 8%; }
+/* Skeptic: bottom, slightly off to the side */
+[data-agent="skeptic"]             { bottom: 8%; left: 50%; transform: translateX(-50%); }
+
+/* ── Speech and thinking bubbles ─────────────────────────────────────── */
+.bubble-wrap {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 6px;
+  z-index: 30;
+  display: none;
+  min-width: 100px;
+  max-width: 180px;
+}
+.bubble-wrap.visible { display: block; }
+
+/* Thinking bubble */
+.bubble-think {
+  background: rgba(20, 30, 60, 0.95);
+  border: 2px solid var(--color-border);
+  padding: 6px 8px;
+  position: relative;
+}
+.bubble-think::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 8px;
+  background: rgba(20, 30, 60, 0.95);
+  border-right: 2px solid var(--color-border);
+  border-bottom: 2px solid var(--color-border);
+  clip-path: polygon(0 0, 100% 0, 100% 100%);
+}
+
+.dots {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  padding: 2px 4px;
+}
+.dots span {
+  width: 5px;
+  height: 5px;
+  background: var(--color-gold);
+  display: block;
+}
+.dots span:nth-child(1) { animation: dot-pulse 1s ease-in-out 0s infinite; }
+.dots span:nth-child(2) { animation: dot-pulse 1s ease-in-out 0.3s infinite; }
+.dots span:nth-child(3) { animation: dot-pulse 1s ease-in-out 0.6s infinite; }
+
+/* Speech bubble */
+.bubble-speech {
+  background: rgba(15, 52, 96, 0.97);
+  border: 2px solid var(--color-gold);
+  padding: 6px 8px;
+  font-size: 8px;
+  line-height: 1.6;
+  color: var(--color-text);
+  word-break: break-word;
+  position: relative;
+}
+.bubble-speech::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 8px;
+  background: rgba(15, 52, 96, 0.97);
+  border-right: 2px solid var(--color-gold);
+  border-bottom: 2px solid var(--color-gold);
+  clip-path: polygon(0 0, 100% 0, 100% 100%);
+}
+.bubble-speech .bubble-sev {
+  font-size: 7px;
+  padding: 2px 4px;
+  margin-bottom: 4px;
+  display: inline-block;
+}

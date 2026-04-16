@@ -1,0 +1,196 @@
+/* ── Meeting Room ────────────────────────────────────────────────────── */
+#room-panel {
+  position: relative;
+  overflow: hidden;
+  background: #2a1a0a;
+  border-right: 3px solid var(--color-border);
+}
+
+#room {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Pixel floor tiles */
+#room-floor {
+  position: absolute;
+  inset: 0;
+  background-color: var(--color-floor);
+  background-image:
+    linear-gradient(90deg, rgba(0,0,0,0.08) 1px, transparent 1px),
+    linear-gradient(rgba(0,0,0,0.08) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+/* Wall (top 30%) */
+#room-wall {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 30%;
+  background: #3d2b1f;
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      rgba(0,0,0,0) 0px, rgba(0,0,0,0) 30px,
+      rgba(0,0,0,0.1) 30px, rgba(0,0,0,0.1) 32px
+    ),
+    repeating-linear-gradient(
+      rgba(0,0,0,0) 0px, rgba(0,0,0,0) 14px,
+      rgba(0,0,0,0.1) 14px, rgba(0,0,0,0.1) 16px
+    );
+  border-bottom: 4px solid #5c3d28;
+}
+
+/* Round table */
+#round-table {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -48%);
+  width: 200px;
+  height: 130px;
+  background: radial-gradient(ellipse, #6b3a1f 60%, #4a2810 100%);
+  border-radius: 50%;
+  border: 6px solid #8b5e3c;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.6), inset 0 2px 6px rgba(255,255,255,0.1);
+  z-index: 5;
+}
+
+/* Table wood grain lines */
+#round-table::before {
+  content: '';
+  position: absolute;
+  inset: 10px;
+  border-radius: 50%;
+  background: repeating-linear-gradient(
+    70deg,
+    transparent 0px,
+    transparent 8px,
+    rgba(0,0,0,0.07) 8px,
+    rgba(0,0,0,0.07) 9px
+  );
+}
+
+/* Chairs around the table */
+.chair {
+  position: absolute;
+  width: 28px;
+  height: 20px;
+  background: #5c3a1e;
+  border: 3px solid #3a2010;
+  border-radius: 3px;
+  z-index: 4;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.4);
+}
+
+/* Debate SVG overlay */
+#debate-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 20;
+}
+
+/* Verdict banner */
+#verdict-banner {
+  position: absolute;
+  top: 0; left: 10%; right: 10%;
+  padding: 10px 8px;
+  background: var(--color-panel);
+  border: 4px solid var(--color-gold);
+  border-top: none;
+  text-align: center;
+  z-index: 50;
+  display: none;
+  animation: drop-in 0.4s ease-out;
+}
+#verdict-banner.visible { display: block; }
+#verdict-banner .verdict-word {
+  font-size: 18px;
+  letter-spacing: 4px;
+  display: block;
+  margin-bottom: 8px;
+}
+#verdict-banner .verdict-confidence {
+  font-size: 9px;
+  color: var(--color-text-dim);
+}
+
+/* Confetti particles */
+.confetti {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  animation: confetti-fall 1.2s ease-in forwards;
+  z-index: 60;
+}
+
+/* Stage indicator */
+#stage-indicator {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.7);
+  border: 2px solid var(--color-border);
+  padding: 5px 10px;
+  font-size: 8px;
+  color: var(--color-text-dim);
+  white-space: nowrap;
+  z-index: 30;
+}
+
+/* Room dim overlay (judge thinking) */
+#room-dim {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0);
+  pointer-events: none;
+  transition: background 1s ease;
+  z-index: 15;
+}
+#room-dim.dimmed { background: rgba(0,0,0,0.55); }
+
+/* Decorative elements */
+#room-bookshelf {
+  position: absolute;
+  top: 8%;
+  right: 2%;
+  width: 40px;
+  height: 70px;
+  background: #5c3a1e;
+  border: 3px solid #3a2010;
+  z-index: 3;
+}
+#room-bookshelf::before {
+  content: '';
+  position: absolute;
+  inset: 4px 3px;
+  background: repeating-linear-gradient(
+    0deg,
+    #c0392b 0px, #c0392b 6px,
+    #2e7d32 6px, #2e7d32 12px,
+    #1a3a6b 12px, #1a3a6b 18px,
+    #ffd700 18px, #ffd700 24px
+  );
+}
+
+#room-window {
+  position: absolute;
+  top: 5%;
+  left: 4%;
+  width: 50px;
+  height: 40px;
+  background: #87ceeb;
+  border: 4px solid #5c3a1e;
+  z-index: 3;
+}
+#room-window::before, #room-window::after {
+  content: '';
+  position: absolute;
+  background: rgba(0,0,0,0.2);
+}
+#room-window::before { left: 50%; top: 0; bottom: 0; width: 2px; }
+#room-window::after  { top: 50%; left: 0; right: 0; height: 2px; }

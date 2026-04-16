@@ -1,0 +1,160 @@
+<svg width="1400" height="820" viewBox="0 0 1400 820" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="120" y1="80" x2="1280" y2="760" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF7E6"/>
+      <stop offset="1" stop-color="#F7FAFF"/>
+    </linearGradient>
+    <linearGradient id="orangePanel" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#FFE1B8"/>
+      <stop offset="1" stop-color="#FFB84D"/>
+    </linearGradient>
+    <linearGradient id="tealPanel" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#E5FFF7"/>
+      <stop offset="1" stop-color="#8DE1CB"/>
+    </linearGradient>
+    <linearGradient id="violetPanel" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#EEF0FF"/>
+      <stop offset="1" stop-color="#B7C4FF"/>
+    </linearGradient>
+    <linearGradient id="greenVerdict" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#D6FFE4"/>
+      <stop offset="1" stop-color="#64D68B"/>
+    </linearGradient>
+    <linearGradient id="amberVerdict" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#FFF2C9"/>
+      <stop offset="1" stop-color="#F5B14A"/>
+    </linearGradient>
+    <linearGradient id="redVerdict" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#FFD7D4"/>
+      <stop offset="1" stop-color="#FF7466"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#243B5320"/>
+    </filter>
+    <marker id="arrow" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto">
+      <path d="M2 2L11 7L2 12" stroke="#56637A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <marker id="greenArrow" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto">
+      <path d="M2 2L11 7L2 12" stroke="#129B59" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1400" height="820" rx="28" fill="url(#bg)"/>
+  <text x="700" y="68" text-anchor="middle" font-family="Arial, sans-serif" font-size="34" font-weight="700" fill="#1E2B3A">
+    eng-ai-committee review pipeline
+  </text>
+  <text x="700" y="100" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#5F6F82">
+    Multimodal document intake, parallel specialist review, adversarial debate, and deterministic verdict rules
+  </text>
+
+  <rect x="48" y="150" width="256" height="480" rx="26" fill="#FFFDF8" stroke="#F0B659" stroke-width="3" filter="url(#shadow)"/>
+  <text x="176" y="190" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#3B2B16">Inputs</text>
+
+  <rect x="72" y="220" width="208" height="82" rx="18" fill="#FFF2D8" stroke="#F0B659" stroke-width="2"/>
+  <text x="176" y="252" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#3B2B16">PDF</text>
+  <text x="176" y="279" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#5C4A2A">Extracted text + page PNGs</text>
+
+  <rect x="72" y="322" width="208" height="82" rx="18" fill="#FFF2D8" stroke="#F0B659" stroke-width="2"/>
+  <text x="176" y="354" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#3B2B16">DOCX</text>
+  <text x="176" y="381" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#5C4A2A">Parsed text + embedded images</text>
+
+  <rect x="72" y="424" width="208" height="82" rx="18" fill="#FFF2D8" stroke="#F0B659" stroke-width="2"/>
+  <text x="176" y="456" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#3B2B16">Markdown / TXT</text>
+  <text x="176" y="483" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#5C4A2A">Plain text review input</text>
+
+  <rect x="72" y="526" width="208" height="82" rx="18" fill="#FFF2D8" stroke="#F0B659" stroke-width="2"/>
+  <text x="176" y="558" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#3B2B16">Evidence rule</text>
+  <text x="176" y="585" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#5C4A2A">Every finding needs a document excerpt</text>
+
+  <rect x="352" y="202" width="220" height="150" rx="26" fill="url(#orangePanel)" stroke="#E29A1D" stroke-width="3" filter="url(#shadow)"/>
+  <text x="462" y="242" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#3B2B16">Structural pre-check</text>
+  <text x="462" y="278" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#4F4029">gpt-5.4-nano</text>
+  <text x="462" y="304" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#4F4029">Required sections verified</text>
+  <text x="462" y="330" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#4F4029">Missing sections -> immediate Reject</text>
+
+  <rect x="620" y="142" width="360" height="518" rx="28" fill="#FFFDF8" stroke="#F0B659" stroke-width="3" filter="url(#shadow)"/>
+  <rect x="620" y="142" width="360" height="58" rx="28" fill="#F7AE2A"/>
+  <text x="800" y="178" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#FFFFFF">Specialist Review Team</text>
+
+  <rect x="652" y="224" width="296" height="108" rx="22" fill="#FFF7E6" stroke="#F0B659" stroke-width="2"/>
+  <text x="800" y="256" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#3B2B16">Security + Compliance</text>
+  <text x="800" y="284" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#5C4A2A">Auth, abuse cases, privacy, retention, audit</text>
+  <text x="800" y="308" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#5C4A2A">Model: gpt-5.4 medium</text>
+
+  <rect x="652" y="352" width="296" height="108" rx="22" fill="#FFF7E6" stroke="#F0B659" stroke-width="2"/>
+  <text x="800" y="384" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#3B2B16">Architecture + Infra</text>
+  <text x="800" y="412" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#5C4A2A">Scalability, data flow, resilience, cost, ops</text>
+  <text x="800" y="436" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#5C4A2A">Model: gpt-5.4 medium</text>
+
+  <rect x="652" y="480" width="296" height="108" rx="22" fill="#FFF7E6" stroke="#F0B659" stroke-width="2"/>
+  <text x="800" y="512" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#3B2B16">Product + Ops</text>
+  <text x="800" y="540" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#5C4A2A">Journeys, UX edges, rollout, SLOs, runbooks</text>
+  <text x="800" y="564" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#5C4A2A">Model: gpt-5.4 medium</text>
+
+  <text x="800" y="624" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#6A5530">
+    Parallel review over text plus extracted diagrams/images
+  </text>
+
+  <rect x="1028" y="208" width="176" height="138" rx="24" fill="url(#tealPanel)" stroke="#2CA98A" stroke-width="3" filter="url(#shadow)"/>
+  <text x="1116" y="248" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#18463E">Deduplication</text>
+  <text x="1116" y="284" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#275B54">gpt-5.4-nano</text>
+  <text x="1116" y="310" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#275B54">Merge overlapping findings</text>
+
+  <rect x="1002" y="388" width="228" height="272" rx="28" fill="url(#violetPanel)" stroke="#5F79E8" stroke-width="3" filter="url(#shadow)"/>
+  <text x="1116" y="428" text-anchor="middle" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="#243475">Skeptic Debate</text>
+  <text x="1116" y="462" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#4052A4">gpt-5.4 medium</text>
+
+  <rect x="1034" y="488" width="164" height="48" rx="14" fill="#FFFFFF" stroke="#7D92F0" stroke-width="2"/>
+  <text x="1116" y="519" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#243475">Challenge</text>
+
+  <rect x="1034" y="548" width="164" height="48" rx="14" fill="#FFFFFF" stroke="#7D92F0" stroke-width="2"/>
+  <text x="1116" y="579" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#243475">Rebut in parallel</text>
+
+  <rect x="1034" y="608" width="164" height="48" rx="14" fill="#FFFFFF" stroke="#7D92F0" stroke-width="2"/>
+  <text x="1116" y="639" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#243475">Rate survive/drop</text>
+
+  <rect x="1252" y="220" width="112" height="240" rx="26" fill="#FFFFFF" stroke="#5F79E8" stroke-width="3" filter="url(#shadow)"/>
+  <text x="1308" y="256" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#243475">Judge</text>
+  <text x="1308" y="286" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#4052A4">gpt-5.4-pro</text>
+  <text x="1308" y="310" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#4052A4">high effort</text>
+  <text x="1308" y="350" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#4052A4">Uses full</text>
+  <text x="1308" y="372" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#4052A4">debate trace</text>
+  <text x="1308" y="394" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#4052A4">plus code-</text>
+  <text x="1308" y="416" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#4052A4">enforced rules</text>
+
+  <rect x="1192" y="544" width="180" height="72" rx="20" fill="url(#greenVerdict)" stroke="#2D9B5D" stroke-width="2.5" filter="url(#shadow)"/>
+  <text x="1282" y="589" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#11442A">PASS</text>
+
+  <rect x="1192" y="628" width="180" height="72" rx="20" fill="url(#amberVerdict)" stroke="#D18B22" stroke-width="2.5" filter="url(#shadow)"/>
+  <text x="1282" y="673" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#5F3B08">REVISE</text>
+
+  <rect x="1192" y="712" width="180" height="72" rx="20" fill="url(#redVerdict)" stroke="#DD564C" stroke-width="2.5" filter="url(#shadow)"/>
+  <text x="1282" y="757" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#611B16">REJECT</text>
+
+  <path d="M280 424H332C344 424 352 416 352 404V278" stroke="#56637A" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <path d="M572 278H606C614 278 620 284 620 292V292" stroke="#56637A" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <path d="M980 404H1002" stroke="#56637A" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M1204 280H1234C1242 280 1252 288 1252 304" stroke="#56637A" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <path d="M1230 524C1260 524 1270 498 1270 472" stroke="#129B59" stroke-width="3" fill="none" marker-end="url(#greenArrow)"/>
+  <path d="M1308 460V528" stroke="#56637A" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <path d="M1116 536V548" stroke="#7D92F0" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <path d="M1116 596V608" stroke="#7D92F0" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+  <rect x="368" y="400" width="188" height="94" rx="22" fill="#FFFFFF" stroke="#DD564C" stroke-width="3" stroke-dasharray="8 10"/>
+  <text x="462" y="436" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#8A2F2A">Fast fail path</text>
+  <text x="462" y="467" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#8A2F2A">Missing required</text>
+  <text x="462" y="488" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#8A2F2A">sections -> Reject</text>
+
+  <path d="M462 352V392" stroke="#DD564C" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+
+  <rect x="996" y="126" width="240" height="54" rx="18" fill="#FFFFFF" stroke="#2CA98A" stroke-width="2"/>
+  <text x="1116" y="160" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#275B54">
+    Near-duplicates merged before debate
+  </text>
+
+  <rect x="1010" y="678" width="172" height="82" rx="20" fill="#FFFFFF" stroke="#5F79E8" stroke-width="2"/>
+  <text x="1096" y="711" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#243475">Confidence bands</text>
+  <text x="1096" y="736" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#4052A4">85-100 clear</text>
+  <text x="1096" y="754" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#4052A4">25-44 uncertain</text>
+</svg>
